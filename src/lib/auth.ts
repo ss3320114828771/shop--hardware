@@ -7,10 +7,8 @@ export async function getUser(req?: NextRequest) {
     let token: string | undefined
 
     if (req) {
-      // Get token from request cookies
       token = req.cookies.get('token')?.value
     } else {
-      // Get token from server cookies - MUST be awaited in Next.js 14+
       const cookieStore = await cookies()
       token = cookieStore.get('token')?.value
     }
@@ -22,7 +20,6 @@ export async function getUser(req?: NextRequest) {
 
     return payload
   } catch (error) {
-    console.error('Auth error:', error)
     return null
   }
 }
@@ -41,7 +38,6 @@ export async function requireAdmin(req: NextRequest) {
     throw new Error('Unauthorized')
   }
   
-  // Check if user has admin role
   const userRole = (user as any).role
   if (userRole !== 'ADMIN') {
     throw new Error('Forbidden: Admin access required')
@@ -50,7 +46,6 @@ export async function requireAdmin(req: NextRequest) {
   return user
 }
 
-// Helper function to get current user in server components
 export async function getCurrentUser() {
   try {
     const cookieStore = await cookies()
@@ -65,16 +60,4 @@ export async function getCurrentUser() {
   } catch (error) {
     return null
   }
-}
-
-// Helper function to check if user is admin
-export async function isAdmin() {
-  const user = await getCurrentUser()
-  return !!(user && (user as any).role === 'ADMIN')
-}
-
-// Helper function to get user ID safely
-export async function getUserId() {
-  const user = await getCurrentUser()
-  return user ? (user as any).id : null
 }
